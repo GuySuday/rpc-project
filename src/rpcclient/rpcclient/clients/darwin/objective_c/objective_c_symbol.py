@@ -53,6 +53,18 @@ class ObjectiveCSymbol(DarwinSymbol):
         symbol.reload()
         return symbol
 
+    def _symbol_from_value(self, value: int):
+        """
+        Returns the gives value as as a DarwinSymbol.
+        This static behvaior is needed, as no value can definitely be a valid objc object.
+        Because treating a value as an objc address may lead to a segmentation fault, it is safer to treat it as a more general symbol.
+
+        :param value: Symbol address
+        :return: DarwinSymbol object.
+        :rtype: DarwinSymbol
+        """
+        return DarwinSymbol.create(value, self._client)
+
     def reload(self):
         """
         Reload object's in-memory layout.
