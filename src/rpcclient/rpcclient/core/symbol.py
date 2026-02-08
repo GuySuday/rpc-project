@@ -37,7 +37,15 @@ class Symbol(int):
         symbol._prepare(client)
         return symbol
 
-    def _clone_from_value(self, value: int):
+    def _symbol_from_value(self, value: int):
+        """
+        Returns the gives value as a symbol.
+        The symbol's type can change depending on the value and/or the symbol's state.
+
+        :param value: Symbol address
+        :return: Symbol object.
+        :rtype: Symbol
+        """
         return self.create(value, self._client)
 
     def _prepare(self, client):
@@ -166,7 +174,7 @@ class Symbol(int):
 
     def __add__(self, other):
         try:
-            return self._clone_from_value(int(self) + other)
+            return self._symbol_from_value(int(self) + other)
         except TypeError:
             return int(self) + other
 
@@ -175,19 +183,19 @@ class Symbol(int):
 
     def __sub__(self, other):
         try:
-            return self._clone_from_value(int(self) - other)
+            return self._symbol_from_value(int(self) - other)
         except TypeError:
             return int(self) - other
 
     def __rsub__(self, other):
         try:
-            return self._clone_from_value(other - int(self))
+            return self._symbol_from_value(other - int(self))
         except TypeError:
             return other - int(self)
 
     def __mul__(self, other):
         try:
-            return self._clone_from_value(int(self) * other)
+            return self._symbol_from_value(int(self) * other)
         except TypeError:
             return int(self) * other
 
@@ -195,27 +203,27 @@ class Symbol(int):
         return self.__mul__(other)
 
     def __truediv__(self, other):
-        return self._clone_from_value(int(self) / other)
+        return self._symbol_from_value(int(self) / other)
 
     def __floordiv__(self, other):
-        return self._clone_from_value(int(self) // other)
+        return self._symbol_from_value(int(self) // other)
 
     def __mod__(self, other):
-        return self._clone_from_value(int(self) % other)
+        return self._symbol_from_value(int(self) % other)
 
     def __and__(self, other):
-        return self._clone_from_value(int(self) & other)
+        return self._symbol_from_value(int(self) & other)
 
     def __or__(self, other):
-        return self._clone_from_value(int(self) | other)
+        return self._symbol_from_value(int(self) | other)
 
     def __xor__(self, other):
-        return self._clone_from_value(int(self) ^ other)
+        return self._symbol_from_value(int(self) ^ other)
 
     def __getitem__(self, item):
         fmt = ADDRESS_SIZE_TO_STRUCT_FORMAT[self.item_size]
         addr = self + item * self.item_size
-        return self._clone_from_value(
+        return self._symbol_from_value(
             struct.unpack(self._client._endianness + fmt, self._client.peek(addr, self.item_size))[0]
         )
 

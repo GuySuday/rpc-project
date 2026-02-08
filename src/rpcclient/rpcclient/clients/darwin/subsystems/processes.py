@@ -371,7 +371,7 @@ class ProcessSymbol(Symbol):
         symbol.process = process
         return symbol
 
-    def _clone_from_value(self, value: int):
+    def _symbol_from_value(self, value: int):
         """Clone this symbol for the given value."""
         return self.create(value, self._client, self.process)
 
