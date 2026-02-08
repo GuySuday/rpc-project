@@ -150,6 +150,8 @@ Options:
   -p, --port INTEGER        TCP port to connect to
   -r, --rebind-symbols      reload all symbols upon connection
   -l, --load-all-libraries  load all libraries
+  -f, --startup-files PATH  File(s) (python) to run on session start. Multiple
+                            files can be provided.
   --help                    Show this message and exit.
 ```
 
@@ -180,20 +182,28 @@ Tip: Use `F2` or %edit with no arguments to open an empty editor with a temporar
 
 ### Understanding the globals: mgr, console, and p
 
-- mgr — Client manager for creating and tracking RPC clients
+- `mgr` — Client manager for creating and tracking RPC clients
     - `mgr.create(hostname="127.0.0.1", port=5910)` → create and connect a new client
     - `mgr.get(pid)` → get a client by PID
     - `mgr.remove(pid)` → disconnect and remove a client
     - `mgr.clients` → list current clients
     - `mgr.clear()` → remove all clients
 
-- console — Console/session controller for switching active client contexts
+- `console` — Console/session controller for switching active client contexts
     - `console.switch(pid)` → switch the active context to a specific PID
     - `console.switch()` → interactively pick a client to switch to
 
-- p — The active client in the current console context
+- `p` — The active client in the current console context
     - Use p to call APIs, e.g., `p.info()`, `p.pid`, `p.fs.listdir(".")`, `p.spawn([...])`
     - When you switch contexts, p is automatically updated to the selected client
+
+### CLI Options
+
+The CLI offers some nice options to customize your run:
+
+#### Client
+
+* `-f` / `--startup-files` - Allows python files to be run when the IPython session starts. You can use it with the globals mentioned above to save you some time when you want to run predefined commands.
 
 
 Create a new client:
