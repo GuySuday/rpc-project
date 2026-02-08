@@ -6,6 +6,7 @@ from typing import Any, Union
 import click
 import IPython
 from IPython import get_ipython
+from IPython.terminal.shortcuts import handle_return_or_newline_or_execute
 from traitlets.config import Config
 
 from rpcclient.client_manager import ClientManager, ClientType
@@ -248,12 +249,15 @@ class Console:
         status = "enabled" if self._auto_switch_on_create else "disabled"
         echo_info(f"Auto-switch on client creation: {status}")
 
-    def previous_context(self, *_: Any) -> None:
+    def previous_context(self, event: Any) -> None:
         """Switch back to the previous active context."""
         if self._previous is None or self._previous not in self._contexts:
             echo_error("No previous context available.")
             return
         self.switch(self._previous)
+
+        # The prompt doesn't change on its own (no In/Out updates) - simulating an "Enter" to trigger a prompt change
+        handle_return_or_newline_or_execute(event)
 
     def show_contexts(self, *_: Any) -> None:
         """List active contexts in a human-readable form."""
