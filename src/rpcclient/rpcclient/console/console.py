@@ -1,7 +1,7 @@
 import dataclasses
 import logging
 import sys
-from typing import Any, Union
+from typing import Any, Optional, Union
 
 import click
 import IPython
@@ -124,7 +124,12 @@ class Console:
             self.switch(switch_cid)
         self._setup_done = True
 
-    def interactive(self, additional_namespace: Union[dict, None] = None, switch_cid: Union[int, None] = None) -> None:
+    def interactive(
+        self,
+        additional_namespace: Optional[dict] = None,
+        switch_cid: Optional[int] = None,
+        startup_files: Optional[tuple[str]] = None,
+    ) -> None:
         """Launch the IPython shell with custom config and extensions."""
         sys.argv = ["a"]
         ipython_config = Config()
@@ -137,6 +142,9 @@ class Console:
             "rpcclient.console.extensions.events",
             "rpcclient.console.extensions.keybindings",
         ]
+        if (startup_files is not None) and (len(startup_files) > 0):
+            ipython_config.InteractiveShellApp.exec_files = startup_files
+
         namespace = {"console": self, "mgr": self.mgr}
         if additional_namespace is not None:
             namespace.update(additional_namespace)
@@ -145,6 +153,10 @@ class Console:
         click.secho("Usage:", bold=True)
         self.show_help()
         click.echo(click.style("Have a nice flight ✈️! Starting an IPython shell...", bold=True))
+
+        if (startup_files is not None) and (len(startup_files) > 0):
+            click.secho(f"Detected Startup files to be run: {startup_files}", bold=True)
+
         IPython.start_ipython(config=ipython_config, user_ns=namespace)
         self.mgr.clear()
 
