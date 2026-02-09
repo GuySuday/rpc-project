@@ -1,5 +1,5 @@
 import logging
-from typing import Union
+from typing import Optional
 
 import click
 import coloredlogs
@@ -38,7 +38,7 @@ def rpclocal(startup_files: tuple[str]) -> None:
 @click.option("-l", "--load-all-libraries", is_flag=True, help="load all libraries")
 @startup_files_option
 def rpcclient(
-    hostname: Union[str, None], port: int, rebind_symbols: bool, load_all_libraries: bool, startup_files: tuple[str]
+    hostname: Optional[str], port: int, rebind_symbols: bool, load_all_libraries: bool, startup_files: tuple[str]
 ):
     """
     Start the console.

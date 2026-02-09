@@ -126,8 +126,8 @@ class Console:
 
     def interactive(
         self,
-        additional_namespace: Union[dict, None] = None,
-        switch_cid: Union[int, None] = None,
+        additional_namespace: Optional[dict] = None,
+        switch_cid: Optional[int] = None,
         startup_files: Optional[tuple[str]] = None,
     ) -> None:
         """Launch the IPython shell with custom config and extensions."""
