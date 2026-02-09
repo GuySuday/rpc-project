@@ -248,13 +248,36 @@ class Console:
         status = "enabled" if self._auto_switch_on_create else "disabled"
         echo_info(f"Auto-switch on client creation: {status}")
 
-    def previous_context(self, *_: Any) -> None:
+    def previous_context(self, event: Any) -> None:
         """Switch back to the previous active context."""
         if self._previous is None or self._previous not in self._contexts:
             echo_error("No previous context available.")
             return
         self.switch(self._previous)
 
+        # The prompt doesn't change on its own (no In/Out updates) - commenting it out and executing ("Enter" simulation) to trigger a prompt change
+        Console._comment_input_and_execute(event)
+
     def show_contexts(self, *_: Any) -> None:
         """List active contexts in a human-readable form."""
         click.echo("\n".join([str(ctx.p) for _, ctx in self.contexts.items()]))
+
+    @staticmethod
+    def _comment_input_and_execute(event: Any):
+        """
+        Comments out the input, single-line or multi-line, and executes it (like pressing "Enter")
+        """
+        buffer = event.current_buffer
+        text = buffer.text
+
+        # Prepend '#' to every non-comment line in the buffer
+        commented_text = "\n".join([f"# {line}" for line in text.splitlines() if not line.startswith("#")])
+
+        # Update the buffer with the commented text
+        buffer.text = commented_text
+
+        # Move the cursor to the end to ensure smooth execution
+        buffer.cursor_position = len(commented_text)
+
+        # Finally, validate and execute
+        buffer.validate_and_handle()
