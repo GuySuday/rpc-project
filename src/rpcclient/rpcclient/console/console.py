@@ -6,7 +6,6 @@ from typing import Any, Union
 import click
 import IPython
 from IPython import get_ipython
-from IPython.terminal.shortcuts import handle_return_or_newline_or_execute
 from traitlets.config import Config
 
 from rpcclient.client_manager import ClientManager, ClientType
@@ -256,9 +255,29 @@ class Console:
             return
         self.switch(self._previous)
 
-        # The prompt doesn't change on its own (no In/Out updates) - simulating an "Enter" to trigger a prompt change
-        handle_return_or_newline_or_execute(event)
+        # The prompt doesn't change on its own (no In/Out updates) - commenting it out and executing ("Enter" simulation) to trigger a prompt change
+        Console._comment_input_and_execute(event)
 
     def show_contexts(self, *_: Any) -> None:
         """List active contexts in a human-readable form."""
         click.echo("\n".join([str(ctx.p) for _, ctx in self.contexts.items()]))
+
+    @staticmethod
+    def _comment_input_and_execute(event: Any):
+        """
+        Comments out the input, single-line or multi-line, and executes it (like pressing "Enter")
+        """
+        buffer = event.current_buffer
+        text = buffer.text
+
+        # Prepend '#' to every non-comment line in the buffer
+        commented_text = "\n".join([f"# {line}" for line in text.splitlines() if not line.startswith("#")])
+
+        # Update the buffer with the commented text
+        buffer.text = commented_text
+
+        # Move the cursor to the end to ensure smooth execution
+        buffer.cursor_position = len(commented_text)
+
+        # Finally, validate and execute
+        buffer.validate_and_handle()
